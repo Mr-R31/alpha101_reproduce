@@ -1,2 +1,1 @@
-# alpha101_reproduce
-对alpha101的因子的复现
+# quant_reproduce_in_alpha101
