@@ -1,1 +1,1 @@
-# quant_reproduce_in_alpha101
+对alpha101的复现，除ic值计算为ai生成外，其余都是人工+ai纠错。程序都是对单日因子值的复现，单股票因子则只输入单股票。主程序为Alpha 101_reproduce.ipynb，初次使用需从头到尾运行，以获取数据，此后直接读取即可
