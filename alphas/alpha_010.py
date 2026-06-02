@@ -11,7 +11,7 @@ from utils.calculators import  date_index_locator
 def alpha_010(**kwargs):
     """
     两个参数
-    dfs:股票数据df组成的列表，所以列表里只有一只股票，数据从data_measue给的日期最起码要有前5日(包括当天)的数据，不然会报错
+    dfs:股票数据df组成的列表，数据从data_measue给的日期最起码要有前5日(包括当天)的数据，不然会报错
     data_measure:Y-M-D形式的str,输入的日期代表计算第二天的选股,不能是节假日
 
     """

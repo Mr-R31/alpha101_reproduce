@@ -10,6 +10,7 @@ def returns_calculator(df):
 def changing_rate_calculator(df):
     if 'changing_rate' not in df.columns:
         df['changing_rate'] = (df['close']-df['open'])/df['open']
+        return df
     else:
         pass
 
@@ -31,10 +32,17 @@ def vwap_calculator(df, data_type='d', roll_window=10):
 
     if data_type == 'd':
         df['vwap'] = df['typical_price']
-        # 直接生成 10 日均值列（方便后续取用）
-        df[f'vwap_mean_{roll_window}'] = df['vwap'].rolling(window=roll_window, min_periods=roll_window).mean()
+        mean_col = f'vwap_mean_{roll_window}'
+        if mean_col not in df.columns:
+            if 'code' in df.columns:
+                # 多股票长表 → 按股票分组 rolling
+                df[f'vwap_mean_{roll_window}'] = df.groupby('code')['vwap'].transform(
+                    lambda x: x.rolling(window=roll_window, min_periods=roll_window).mean())
+            else:
+                # 单股票 → 直接 rolling
+                df[f'vwap_mean_{roll_window}'] = df['vwap'].rolling(window=roll_window, min_periods=roll_window).mean()
     else:
-        # 如果是分钟线，你可以后期扩展
+        # 未支持分钟线
         raise NotImplementedError("目前只支持日线 data_type='d'")
     return df
 
@@ -44,9 +52,15 @@ def SignedPower(x,date_index=21):
     x_squre=np.square(x)
     return x_squre*x_sign
 
-#计算整个列表的指定 [variable] 的每 [days] 日的平均值 默认值为20日的volume平均值
+#计算整个列表的指定 [variable] 的每 [days] 日的平均值 默认值为20日的volume平均值（已向量化）
 def adv_calculator(df,days=20,variable='volume'):
-    if f'{variable}_adv_{days}' not in df.columns:
-        df[f'{variable}_adv_{days}'] = df[variable].rolling(window=days, min_periods=days).mean()
-
+    col = f'{variable}_adv_{days}'
+    if col not in df.columns:
+        if 'code' in df.columns:
+            # 多股票长表 → 按股票分组 rolling
+            df[col] = df.groupby('code')[variable].transform(
+                lambda x: x.rolling(window=days, min_periods=days).mean())
+        else:
+            # 单股票 → 直接 rolling
+            df[col] = df[variable].rolling(window=days, min_periods=days).mean()
     return df

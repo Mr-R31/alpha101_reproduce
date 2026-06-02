@@ -22,7 +22,7 @@ def returns_adjuster(df, date_index=21):
     """
     # 1. 计算全序列的 20 日滚动标准差（只算一次）
     if 'roll_std_20' not in df.columns:
-        df['roll_std_20'] = df['returns'].rolling(window=20, min_periods=1).std(ddof=1)
+        df['roll_std_20'] = df['returns'].rolling(window=20, min_periods=20).std(ddof=1)
 
     # 2. 按 date_index 取出对应值
     if df.loc[date_index, 'returns'] < 0:
@@ -30,3 +30,7 @@ def returns_adjuster(df, date_index=21):
     else:
         x = df.loc[date_index, 'close']
     return x
+
+def delta_vec(df,day=2,delta_colum='log_volume'):
+    #向量化版本delta
+    return df.sort_values(['code', 'date']).groupby('code')[delta_colum].diff(day)

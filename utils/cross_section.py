@@ -3,7 +3,7 @@ import numpy as np
 from scipy.stats import rankdata
 def alpha_rank(values,method='percentile'):
     """
-    横截面排名函数
+    横截面排名函数(向量化后的因子不可使用)
     values : 1D array-like
     method : 'ordinal'  -> 原始整数排名 (1-based, 并列按出现顺序)
              'average'  -> 平均排名 (1-based)

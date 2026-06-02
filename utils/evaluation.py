@@ -3,7 +3,6 @@ import numpy as np
 from scipy.stats import spearmanr
 from utils.calculators import date_index_locator
 
-
 def build_forward_return_panel(dfs, dates):
     """
     构建未来收益面板数据。
@@ -149,3 +148,71 @@ def ic_summary(ic_series):
     ic_ir = mean_ic / std_ic if std_ic > 0 else np.nan
 
     return {'mean_ic': mean_ic, 'std_ic': std_ic, 'ic_ir': ic_ir}
+
+def build_price_panel(dfs, dates):
+    """
+    构建价格面板，供 AlphaPurify 使用。
+
+    参数
+    ----------
+    dfs : list of pd.DataFrame，每只股票的日线数据
+    dates : list-like，日期序列（str 或 datetime）
+
+    返回
+    -------
+    pd.DataFrame : 行为日期、列为股票代码、值为 close 价格
+    """
+    price_dates = pd.to_datetime(dates)
+    panel = {}
+    for df in dfs:
+        code = df['code'].iloc[0]
+        s = df.set_index('date')['close'].reindex(price_dates)
+        panel[code] = s
+    return pd.DataFrame(panel)
+
+
+def factor_panel_to_long(factor_panel, price_panel):
+    """
+    把 evaluation 的宽表面板转为 AlphaPurify 需要的长表格式。
+
+    返回 pd.DataFrame，列: date, code, close, factor_value
+    """
+    # factor_panel: index=dates, columns=stock codes
+    # price_panel:  index=dates, columns=stock codes
+
+    df = factor_panel.stack().reset_index()
+    df.columns = ["date", "code", "factor_value"]
+    price_long = price_panel.stack().reset_index()
+    price_long.columns = ["date", "code", "close"]
+    return df.merge(price_long, on=["date", "code"])
+
+
+def evaluation_alphapurify(dfs,dates,alphas):
+    from alphapurify import FactorAnalyzer 
+    for name, module_path, func_name, single, extras in alphas:
+        # 动态导入因子函数
+        mod = __import__(module_path, fromlist=["dummy"])
+        alpha_func = getattr(mod, func_name)
+
+        # 构建因子面板
+        f_df = build_factor_panel(alpha_func, dfs, dates,single_stock=single,**extras)
+        p_df = build_price_panel(dfs, dates)
+
+        #转长表
+        long_df = factor_panel_to_long(f_df, p_df)
+
+        #评估
+        analyzer = FactorAnalyzer.simple(
+            df=long_df,
+            factor_name='factor_value',
+            trade_date_col="date",
+            symbol_col="code",
+            price_col="close",
+        )
+        analyzer.run()
+
+        # 4. 查看可视化
+        fig = analyzer.create_single_fac_ic_sheet(return_fig=True) # IC 面板
+        fig_1=analyzer.create_long_short_return_sheet(return_fig=True)# 多空收益曲线
+        fig.write_html(f"ic_sheet_{name}.html")
+        fig_1.write_html(f'return_sheet_{name}.html')
