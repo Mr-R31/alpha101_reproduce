@@ -39,6 +39,13 @@ def build_forward_return_panel(dfs, dates):
     result.index = pd.to_datetime(result.index)
     return result.sort_index()
 
+def build_forward_return_panel_vec(full_df):
+    full_df = full_df.sort_values(['code', 'date'])
+    if 'fwd_ret' not in full_df.columns:
+        full_df['fwd_ret'] = full_df.groupby('code')['close'].transform(
+            lambda x: x.shift(-1) / x - 1)
+    return full_df
+
 
 def build_factor_panel(alpha_func, dfs, dates, single_stock=False, **alpha_kwargs):
     """

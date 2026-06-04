@@ -1,11 +1,8 @@
 import pandas as pd
-import os
 import numpy as np
-import sys
 
 from utils.calculators import changing_rate_calculator
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from utils.time_series import delta_vec
 #Alpha002: (-1 * correlation(rank(delta(log(volume), 2)), rank(((close - open) / open)), 6))
 

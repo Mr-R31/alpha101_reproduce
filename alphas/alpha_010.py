@@ -1,9 +1,6 @@
 #Alpha010: rank(((0 < ts_min(delta(close, 1), 4)) ? delta(close, 1) : ((ts_max(delta(close, 1), 4) < 0)? delta(close, 1) : (-1 * delta(close, 1)))))
 import pandas as pd
-import os
 import numpy as np
-import sys
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from utils.cross_section import alpha_rank
 from utils.time_series import delta
 from utils.calculators import  date_index_locator

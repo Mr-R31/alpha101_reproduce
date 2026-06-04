@@ -1,8 +1,5 @@
 import pandas as pd
-import os
 import numpy as np
-import sys
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from utils.calculators import   vwap_calculator
 #(rank((open - (sum(vwap, 10) / 10))) * (-1 * abs(rank((close - vwap)))))
 def alpha_005(full_df):
@@ -27,12 +24,15 @@ def alpha_005(full_df):
     #open-sum(vwap, 10) / 10
     #rank((open - (sum(vwap, 10) / 10))
     full_df['rank_var'] = full_df['open'] - full_df[div_col]
-    full_df[x_col]=full_df.groupby('date')['rank_var'].rank(pct=True)
+    ra = full_df.groupby('date')['rank_var'].rank(method='average')
+    na = full_df.groupby('date')['rank_var'].transform('count')
+    full_df[x_col] = (ra - 1) / (na - 1)
 
     #rank((close - vwap))
     full_df[rank_col]=(full_df['close']-full_df['vwap'])
-
-    full_df[y_col] = -1*abs(full_df.groupby('date')[rank_col].rank(pct=True))
+    rb = full_df.groupby('date')[rank_col].rank(method='average')
+    nb = full_df.groupby('date')[rank_col].transform('count')
+    full_df[y_col] = -1*abs((rb - 1) / (nb - 1))
 
 
 

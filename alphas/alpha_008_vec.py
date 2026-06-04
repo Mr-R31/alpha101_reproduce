@@ -1,9 +1,6 @@
 #Alpha008: (-1 * rank(((sum(open, 5) * sum(returns, 5)) - delay((sum(open, 5) * sum(returns, 5)),10))))
 import pandas as pd
-import os
 import numpy as np
-import sys
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from utils.calculators import   returns_calculator
 def alpha_008(full_df):
     """
@@ -34,6 +31,8 @@ def alpha_008(full_df):
     # 数据不足 sum_days+delay_days 天的行，强制 NaN
     full_df.loc[full_df.groupby('code')['date'].cumcount() < sum_days + delay_days - 1, delay_col] = np.nan
 
-    full_df['alpha_008'] = -1*full_df.groupby('date')[delay_col].rank(pct=True)
+    r = full_df.groupby('date')[delay_col].rank(method='average')
+    n = full_df.groupby('date')[delay_col].transform('count')
+    full_df['alpha_008'] = -1 * (r - 1) / (n - 1)
 
     return full_df.pivot(index='date', columns='code', values='alpha_008')

@@ -1,10 +1,6 @@
 #Alpha010: rank(((0 < ts_min(delta(close, 1), 4)) ? delta(close, 1) : ((ts_max(delta(close, 1), 4) < 0)? delta(close, 1) : (-1 * delta(close, 1)))))
 import pandas as pd
-import os
 import numpy as np
-import sys
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from utils.time_series import  delta_vec
 
 def alpha_010(full_df):
@@ -36,5 +32,7 @@ def alpha_010(full_df):
     # 数据不足 ts_m_days 天的行，强制 NaN
     full_df.loc[full_df['ts_min'].isna(), 'raw'] = np.nan
 
-    full_df['alpha_010'] = full_df.groupby('date')['raw'].rank(pct=True)
+    r = full_df.groupby('date')['raw'].rank(method='average')
+    n = full_df.groupby('date')['raw'].transform('count')
+    full_df['alpha_010'] = (r - 1) / (n - 1)
     return full_df.pivot(index='date', columns='code', values='alpha_010')

@@ -1,7 +1,4 @@
 import pandas as pd
-import os
-import sys
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from utils.cross_section import alpha_rank
 from utils.time_series import Ts_ArgMax , returns_adjuster
 from utils.calculators import returns_calculator, date_index_locator , SignedPower
@@ -23,7 +20,7 @@ def alpha_001(**kwargs):
         arg_list=[]
         for i in range(date_index,date_index-5,-1):
             x= returns_adjuster(df,i)
-            arg_list.append(SignedPower(x,i))
+            arg_list.append(SignedPower(x))
 
         alpha_list.append(Ts_ArgMax(arg_list))
 

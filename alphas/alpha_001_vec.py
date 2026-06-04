@@ -1,8 +1,5 @@
 import pandas as pd
 import numpy as np
-import os
-import sys
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from utils.calculators import returns_calculator
 
 #alpha 001 (rank(Ts_ArgMax(SignedPower(((returns < 0) ? stddev(returns, 20) : close), 2.), 5)) -0.5)
@@ -29,9 +26,11 @@ def alpha_001(full_df):
     full_df['square_tendency']=np.sign(full_df['tendency'])*np.square(full_df['tendency'])
 
     full_df['ts_argmax']=full_df.groupby('code')['square_tendency'].transform(
-        lambda x : x.rolling(window=ts_argmax_window, min_periods=ts_argmax_window).apply(lambda arr: np.argmax(arr)+1)
+        lambda x : x.rolling(window=ts_argmax_window, min_periods=ts_argmax_window).apply(lambda arr: np.argmax(arr[::-1])+1)
     )
-    full_df['alpha_001']=full_df.groupby('date')['ts_argmax'].rank(pct=True)
+    ranks = full_df.groupby('date')['ts_argmax'].rank(method='average')
+    n = full_df.groupby('date')['ts_argmax'].transform('count')
+    full_df['alpha_001'] = (ranks - 1) / (n - 1)
 
     full_df.loc[full_df['ts_argmax'].isna(), 'alpha_001'] = np.nan
 

@@ -1,9 +1,6 @@
 #Alpha009: ((0 < ts_min(delta(close, 1), 5)) ? delta(close, 1) : ((ts_max(delta(close, 1), 5) < 0) ?delta(close, 1) : (-1 * delta(close, 1))))
 import pandas as pd
-import os
 import numpy as np
-import sys
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from utils.time_series import delta_vec
 def alpha_009(full_df):
     """

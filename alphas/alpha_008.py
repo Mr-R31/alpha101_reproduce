@@ -1,9 +1,6 @@
 #Alpha008: (-1 * rank(((sum(open, 5) * sum(returns, 5)) - delay((sum(open, 5) * sum(returns, 5)),10))))
 import pandas as pd
-import os
 import numpy as np
-import sys
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from utils.cross_section import alpha_rank
 from utils.calculators import  date_index_locator , returns_calculator
 def alpha_008(**kwargs):

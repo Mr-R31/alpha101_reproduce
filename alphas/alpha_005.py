@@ -1,8 +1,5 @@
 import pandas as pd
-import os
 import numpy as np
-import sys
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from utils.cross_section import alpha_rank
 from utils.calculators import  date_index_locator , vwap_calculator
 #(rank((open - (sum(vwap, 10) / 10))) * (-1 * abs(rank((close - vwap)))))

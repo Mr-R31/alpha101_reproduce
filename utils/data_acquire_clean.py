@@ -1,9 +1,6 @@
 import baostock as bs
 import pandas as pd
-import os
 import numpy as np
-import sys
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 #### 登陆系统 ####
 def acquire_stock(code='sh.600000',data_type='d',start_date='2024-07-01',end_date='2024-12-31'):
     lg = bs.login()

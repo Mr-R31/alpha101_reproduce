@@ -10,9 +10,7 @@ def returns_calculator(df):
 def changing_rate_calculator(df):
     if 'changing_rate' not in df.columns:
         df['changing_rate'] = (df['close']-df['open'])/df['open']
-        return df
-    else:
-        pass
+    return df
 
 #计算x和y向量的相关系数
 def correlation_calculator(arrx, arry):
@@ -47,7 +45,7 @@ def vwap_calculator(df, data_type='d', roll_window=10):
     return df
 
 #SignedPower(x1,2)将x保留符号的平方
-def SignedPower(x,date_index=21):
+def SignedPower(x):
     x_sign=np.sign(x)
     x_squre=np.square(x)
     return x_squre*x_sign
